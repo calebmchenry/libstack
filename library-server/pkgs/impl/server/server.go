@@ -3,7 +3,7 @@ package server
 import (
 	"encoding/json"
 	"fmt"
-	"libstack/pkgs/auth"
+	"libstack/pkgs/impl/auth"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -48,6 +48,8 @@ func createRoutes() *mux.Router {
 	api.Path("/patron.title.borrow").Handler(http.HandlerFunc(borrowTitle)).Methods(http.MethodPost, http.MethodOptions)
 	api.Path("/patron.title.hold").Handler(http.HandlerFunc(holdTitle)).Methods(http.MethodPost, http.MethodOptions)
 	api.Path("/patron.title.return").Handler(http.HandlerFunc(returnTitle)).Methods(http.MethodPost, http.MethodOptions)
+	api.Path("/patron.title.list").Handler(http.HandlerFunc(returnTitle)).Methods(http.MethodPost, http.MethodOptions)
+	api.Path("/patron.loan.list").Handler(http.HandlerFunc(returnTitle)).Methods(http.MethodPost, http.MethodOptions)
 	// TODO(mchenryc): add some kind of route for viewing all the titles
 	return r
 }

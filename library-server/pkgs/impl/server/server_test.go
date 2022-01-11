@@ -3,7 +3,7 @@ package server_test
 import (
 	"bytes"
 	"encoding/json"
-	"libstack/pkgs/server"
+	"libstack/pkgs/impl/server"
 	"net/http"
 	"net/http/httptest"
 	"os"

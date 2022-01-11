@@ -1,7 +1,7 @@
 package main
 
 import (
-	"libstack/pkgs/server"
+	"libstack/pkgs/impl/server"
 )
 
 func main() {
