@@ -1,7 +1,10 @@
 package main
 
-import "fmt"
+import (
+	"libstack/pkgs/server"
+)
 
 func main() {
-	fmt.Println("Hello World")
+	s := server.New()
+	s.Serve()
 }

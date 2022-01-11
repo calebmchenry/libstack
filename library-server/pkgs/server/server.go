@@ -2,6 +2,7 @@ package server
 
 import (
 	"encoding/json"
+	"fmt"
 	"libstack/pkgs/auth"
 	"net/http"
 
@@ -20,6 +21,14 @@ type Server struct {
 
 func New() Server {
 	return Server{Router: createRoutes()}
+}
+
+func (s *Server) Serve() {
+	// TODO(mchenryc): make port an env variable
+	port := "8000"
+	addr := fmt.Sprintf(":%s", port)
+	fmt.Printf("Listing and Serving on localhost:%s\n", port)
+	http.ListenAndServe(addr, s.Router)
 }
 
 func createRoutes() *mux.Router {
