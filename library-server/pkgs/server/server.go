@@ -2,6 +2,7 @@ package server
 
 import (
 	"encoding/json"
+	"libstack/pkgs/auth"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -30,15 +31,14 @@ func createRoutes() *mux.Router {
 
 	// Authentication required
 	api := r.PathPrefix("/api/v1").Subrouter()
-	// TODO(mchenryc): add somekind of auth middle ware to detect detect and validate user session
-	// api.Use(someKindOfAuthMiddleWare)
-	api.Path("/logout").Handler(http.HandlerFunc(logout)).Methods(http.MethodGet, http.MethodOptions)
+	api.Use(auth.Middleware)
+	api.Path("/logout").Handler(http.HandlerFunc(logout)).Methods(http.MethodPost, http.MethodOptions)
 
 	api.Path("/librarian.title.add").Handler(http.HandlerFunc(addTitle)).Methods(http.MethodPost, http.MethodOptions)
-	api.Path("/librarian.title.archive").Handler(http.HandlerFunc(archiveTitle)).Methods(http.MethodGet, http.MethodOptions)
-	api.Path("/patron.title.borrow").Handler(http.HandlerFunc(borrowTitle)).Methods(http.MethodGet, http.MethodOptions)
-	api.Path("/patron.title.hold").Handler(http.HandlerFunc(holdTitle)).Methods(http.MethodPut, http.MethodOptions)
-	api.Path("/patron.title.return").Handler(http.HandlerFunc(returnTitle)).Methods(http.MethodDelete, http.MethodOptions)
+	api.Path("/librarian.title.archive").Handler(http.HandlerFunc(archiveTitle)).Methods(http.MethodPost, http.MethodOptions)
+	api.Path("/patron.title.borrow").Handler(http.HandlerFunc(borrowTitle)).Methods(http.MethodPost, http.MethodOptions)
+	api.Path("/patron.title.hold").Handler(http.HandlerFunc(holdTitle)).Methods(http.MethodPost, http.MethodOptions)
+	api.Path("/patron.title.return").Handler(http.HandlerFunc(returnTitle)).Methods(http.MethodPost, http.MethodOptions)
 	// TODO(mchenryc): add some kind of route for viewing all the titles
 	return r
 }

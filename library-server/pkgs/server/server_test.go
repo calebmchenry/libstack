@@ -49,6 +49,16 @@ func TestLogin(t *testing.T) {
 	})
 }
 
+func TestLogout(t *testing.T) {
+	t.Run("forbids logging out of unauthenticated users", func(t *testing.T) {
+		req, _ := http.NewRequest("POST", "/api/v1/logout", nil)
+		res := Do(req)
+
+		assert.Equal(t, http.StatusForbidden, res.Code)
+	})
+	// TODO(mchenryc): test success logout response
+}
+
 func Do(req *http.Request) *httptest.ResponseRecorder {
 	rr := httptest.NewRecorder()
 	s.Router.ServeHTTP(rr, req)
