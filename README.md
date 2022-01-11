@@ -2,28 +2,25 @@
 
 Basic library app to practice Go and clean architecture
 
-## Requirements
+## Use Cases
+
+Go to `library-server/pkgs/usecases` to see the logic for these use cases
 
 ### All
 
-#### Login
-
-#### Logout
+* Login
+* Logout
 
 ### Librarian
 
-#### Add Title
-
-#### Archive Title
+* Add Title
+* Archive Title
 
 ### Patrons
 
-#### Borrow
-
-#### Hold
-
-#### Return
+* Borrow
+* Hold
+* Return
 
 ### Automated
-
-#### Notifications
+* Loan Notifications
