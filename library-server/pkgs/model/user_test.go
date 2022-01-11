@@ -8,7 +8,7 @@ import (
 
 func TestSetPassword(t *testing.T) {
 	t.Run("does not allow empty password", func(t *testing.T) {
-		user := UserModel{}
+		user := User{}
 		password := ""
 		err := user.setPassword(password)
 
@@ -16,7 +16,7 @@ func TestSetPassword(t *testing.T) {
 	})
 
 	t.Run("hashes provided password", func(t *testing.T) {
-		user := UserModel{}
+		user := User{}
 		password := "password123"
 		user.setPassword(password)
 
@@ -27,7 +27,7 @@ func TestSetPassword(t *testing.T) {
 
 func TestCheckPassword(t *testing.T) {
 	t.Run("returns no error when password matches", func(t *testing.T) {
-		user := UserModel{}
+		user := User{}
 		password := "password123"
 		user.setPassword(password)
 
@@ -36,7 +36,7 @@ func TestCheckPassword(t *testing.T) {
 	})
 
 	t.Run("returns error when password does not matches", func(t *testing.T) {
-		user := UserModel{}
+		user := User{}
 		password := "password123"
 		otherPassword := "123password"
 		user.setPassword(password)

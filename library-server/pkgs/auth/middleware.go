@@ -51,6 +51,7 @@ func extractToken(r *http.Request) string {
 type contextKey string
 
 func addUserContext(r *http.Request, c claims) *http.Request {
+	// TODO(mchenryc): add real user to context
 	key := contextKey("user")
 	return r.WithContext(context.WithValue(r.Context(), key, c.User))
 }
