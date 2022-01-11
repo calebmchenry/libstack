@@ -20,7 +20,9 @@ jobs:
         go-version: '1.18.0-beta1'
 
     - name: Build
+      working-directory: ./library-server
       run: go build -v ./library-server/...
 
     - name: Test
+      working-directory: ./library-server
       run: go test -v ./library-server/...
