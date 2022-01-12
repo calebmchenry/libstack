@@ -1,6 +1,7 @@
 package model
 
 type Loan struct {
-	isbn     string
-	username string
+	Isbn     string
+	Username string
+	Id       string
 }

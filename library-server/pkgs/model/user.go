@@ -11,6 +11,7 @@ type User struct {
 	Username     string
 	Email        string
 	PasswordHash string
+	Roles        []string
 }
 
 // setPassword will hash the provided password and add it to the UserModel

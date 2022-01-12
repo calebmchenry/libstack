@@ -1,0 +1,41 @@
+package memory
+
+import (
+	"context"
+	"fmt"
+	"libstack/pkgs/model"
+)
+
+type TitleReadWriter struct {
+	cache map[string]model.Title
+}
+
+func NewTitleReadWriter() *TitleReadWriter {
+	return &TitleReadWriter{cache: map[string]model.Title{}}
+}
+
+func (l *TitleReadWriter) GetByIsbn(ctx context.Context, isbn string) (*model.Title, error) {
+	if isbn == "" {
+		return nil, fmt.Errorf("isbn required")
+	}
+	title, ok := l.cache[isbn]
+	if !ok {
+		return nil, fmt.Errorf("could not find title with isbn %q", isbn)
+	}
+	return &title, nil
+}
+
+// TODO(mchenryc): should I be returning a pointer here? That seems like it would mess up the cache
+
+func (l *TitleReadWriter) Add(ctx context.Context, title model.Title) (*model.Title, error) {
+	// TODO(mchenryc): logging
+	// TODO(mchenryc): should validation happen somewhere else?
+	if title.Isbn == "" {
+		return nil, fmt.Errorf("isbn required")
+	}
+	if _, ok := l.cache[title.Isbn]; ok {
+		return nil, fmt.Errorf("title with isbn already exists")
+	}
+	l.cache[title.Isbn] = title
+	return &title, nil
+}

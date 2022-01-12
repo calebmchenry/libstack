@@ -1,6 +1,9 @@
 package usecase
 
-import "libstack/pkgs/model"
+import (
+	"context"
+	"libstack/pkgs/model"
+)
 
 type Interactor struct {
 	Authenticator Authenticator
@@ -9,16 +12,15 @@ type Interactor struct {
 }
 
 type Authenticator interface {
-	IsLibrarian(user model.User) bool
-	IsPatron(user model.User) bool
+	IsPatron(ctx context.Context, user model.User) bool
 }
 
 type TitleReadWriter interface {
-	GetByIsbn(isbn string) (model.Title, error)
-	Update(model.Title) (model.Title, error)
+	GetByIsbn(ctx context.Context, isbn string) (*model.Title, error)
+	Add(ctx context.Context, title model.Title) (*model.Title, error)
 }
 
 type LoanReadWriter interface {
-	Add(isbn string, user model.User) (model.Loan, error)
-	Count(isbn string) (int, error)
+	Add(ctx context.Context, isbn string, user model.User) (*model.Loan, error)
+	Count(ctx context.Context, isbn string) (int, error)
 }
