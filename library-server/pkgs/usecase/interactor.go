@@ -16,11 +16,11 @@ type Authenticator interface {
 }
 
 type TitleReadWriter interface {
-	GetByIsbn(ctx context.Context, isbn string) (*model.Title, error)
-	Add(ctx context.Context, title model.Title) (*model.Title, error)
+	GetByIsbn(ctx context.Context, isbn string) (model.Title, error)
+	Add(ctx context.Context, title model.Title) (model.Title, error)
 }
 
 type LoanReadWriter interface {
-	Add(ctx context.Context, isbn string, user model.User) (*model.Loan, error)
+	Add(ctx context.Context, isbn string, user model.User) (model.Loan, error)
 	Count(ctx context.Context, isbn string) (int, error)
 }

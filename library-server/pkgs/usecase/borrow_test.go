@@ -62,8 +62,7 @@ func TestBorrow(t *testing.T) {
 		initialCount, _ := i.LoanRW.Count(ctx, isbn)
 		assert.Equal(t, 0, initialCount)
 
-		loan, err := i.Borrow(ctx, isbn, user)
-		assert.Nil(t, loan)
+		_, err := i.Borrow(ctx, isbn, user)
 		assert.NotNil(t, err)
 		assert.Contains(t, "unauthorized", err.Kind)
 
@@ -82,8 +81,7 @@ func TestBorrow(t *testing.T) {
 		initialCount, _ := i.LoanRW.Count(ctx, isbn)
 		assert.Equal(t, 0, initialCount)
 
-		loan, err := i.Borrow(ctx, isbn, user)
-		assert.Nil(t, loan)
+		_, err := i.Borrow(ctx, isbn, user)
 		assert.NotNil(t, err)
 		assert.Contains(t, "isbn_not_found", err.Kind)
 
@@ -109,8 +107,7 @@ func TestBorrow(t *testing.T) {
 		initialCount, _ := i.LoanRW.Count(ctx, isbn)
 		assert.Equal(t, 1, initialCount)
 
-		loan, err := i.Borrow(ctx, isbn, user)
-		assert.Nil(t, loan)
+		_, err := i.Borrow(ctx, isbn, user)
 		assert.NotNil(t, err)
 		assert.Contains(t, "hold_instead", err.Kind)
 

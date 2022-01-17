@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"libstack/pkgs/impl/logging"
 	"libstack/pkgs/model"
+	"libstack/pkgs/util"
 
 	"go.uber.org/zap"
 )
@@ -31,9 +32,7 @@ func holdInsteadError(message string) *BorrowError {
 	return &BorrowError{Kind: "hold_instead", message: message}
 }
 
-// TODO(mchenryc): what should I be doing with this message? Should I just be
-// logging outside of the business log e.g. when I handle the returned error
-// of this func
+// TODO(mchenryc): place trace-id on errors for trouble shooting purposes
 
 // Borrow will create a loan of the specified title for the provided user.
 //
@@ -47,24 +46,27 @@ func holdInsteadError(message string) *BorrowError {
 // 	* (2) -> `"isbn_not_found"`
 // 	* (3) -> `"hold_instead"`
 // 	* (unexpected behavior) -> `"internal_error"`
-func (i *Interactor) Borrow(ctx context.Context, isbn string, user model.User) (*model.Loan, *BorrowError) {
+func (i *Interactor) Borrow(ctx context.Context, isbn string, user model.User) (model.Loan, *BorrowError) {
+	var emptyLoan model.Loan
+	trace, _ := util.Uuid()
 	logger := logging.From(ctx).With(
 		zap.String("method", "borrow"),
 		zap.String("user", user.Username),
 		zap.String("isbn", isbn),
+		zap.String("trace-id", trace),
 	)
 	logger.Info("start")
 	if !i.Authenticator.IsPatron(ctx, user) {
 		logger.Info("unauthorized")
-		return nil, unauthorizedError("user must be a patron to borrow a title")
+		return emptyLoan, unauthorizedError("user must be a patron to borrow a title")
 	}
 
-	titleCh := make(chan Result[*model.Title])
+	titleCh := make(chan Result[model.Title])
 	countCh := make(chan Result[int])
 
 	go func() {
 		title, err := i.TitleRW.GetByIsbn(ctx, isbn)
-		titleCh <- Result[*model.Title]{Data: title, Err: err}
+		titleCh <- Result[model.Title]{Data: title, Err: err}
 		close(titleCh)
 	}()
 	go func() {
@@ -77,26 +79,26 @@ func (i *Interactor) Borrow(ctx context.Context, isbn string, user model.User) (
 	title, err := titleResult.Unwrap()
 	if err != nil {
 		logger.Info("isbn not found")
-		return nil, notFoundError(fmt.Sprintf("no title found with isbn %q", isbn))
+		return emptyLoan, notFoundError(fmt.Sprintf("no title found with isbn %q", isbn))
 	}
 
 	countResult := <-countCh
 	count, err := countResult.Unwrap()
 	if err != nil {
 		logger.Info("unable to load number of loans")
-		return nil, internalError(fmt.Sprintf("unable to load number of loans for title with isbn %q", isbn))
+		return emptyLoan, internalError(fmt.Sprintf("unable to load number of loans for title with isbn %q", isbn))
 	}
 
 	// >= instead of == incase number of loans gets into a bad state
 	if count >= title.Stock {
 		logger.Info("title not available")
-		return nil, holdInsteadError("title not available")
+		return emptyLoan, holdInsteadError("title not available")
 	}
 
 	loan, err := i.LoanRW.Add(ctx, isbn, user)
 	if err != nil {
 		logger.Info("failed to add loan")
-		return nil, internalError("failed to add loan")
+		return emptyLoan, internalError("failed to add loan")
 	}
 
 	logger.Info("success")
