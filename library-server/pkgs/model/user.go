@@ -36,3 +36,23 @@ func (u *User) checkPassword(password string) error {
 	bytePassword := []byte(password)
 	return bcrypt.CompareHashAndPassword(byteHashedPassword, bytePassword)
 }
+
+func (u *User) IsPatron() bool {
+	for _, v := range u.Roles {
+		if v == "patron" {
+			return true
+		}
+	}
+	return false
+
+}
+
+func (u *User) IsLibrarian() bool {
+	for _, v := range u.Roles {
+		if v == "librarian" {
+			return true
+		}
+	}
+	return false
+
+}

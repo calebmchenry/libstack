@@ -10,29 +10,7 @@ import (
 	"go.uber.org/zap"
 )
 
-type BorrowError struct {
-	Kind    string
-	message string
-}
-
-func (e *BorrowError) Error() string {
-	return fmt.Sprintf("%s: %s", e.Kind, e.message)
-}
-
-func internalError(message string) *BorrowError {
-	return &BorrowError{Kind: "internal_error", message: message}
-}
-func unauthorizedError(message string) *BorrowError {
-	return &BorrowError{Kind: "unauthorized", message: message}
-}
-func notFoundError(message string) *BorrowError {
-	return &BorrowError{Kind: "isbn_not_found", message: message}
-}
-func holdInsteadError(message string) *BorrowError {
-	return &BorrowError{Kind: "hold_instead", message: message}
-}
-
-// TODO(mchenryc): place trace-id on errors for trouble shooting purposes
+// TODO(mchenryc): quit eating cause of internal errors
 
 // Borrow will create a loan of the specified title for the provided user.
 //
@@ -46,7 +24,7 @@ func holdInsteadError(message string) *BorrowError {
 // 	* (2) -> `"isbn_not_found"`
 // 	* (3) -> `"hold_instead"`
 // 	* (unexpected behavior) -> `"internal_error"`
-func (i *Interactor) Borrow(ctx context.Context, isbn string, user model.User) (model.Loan, *BorrowError) {
+func (i *Interactor) Borrow(ctx context.Context, isbn string, user model.User) (model.Loan, *UseCaseError) {
 	var emptyLoan model.Loan
 	trace, _ := util.Uuid()
 	logger := logging.From(ctx).With(
@@ -56,7 +34,7 @@ func (i *Interactor) Borrow(ctx context.Context, isbn string, user model.User) (
 		zap.String("trace-id", trace),
 	)
 	logger.Info("start")
-	if !i.Authenticator.IsPatron(ctx, user) {
+	if !user.IsPatron() {
 		logger.Info("unauthorized")
 		return emptyLoan, unauthorizedError("user must be a patron to borrow a title")
 	}
@@ -86,7 +64,8 @@ func (i *Interactor) Borrow(ctx context.Context, isbn string, user model.User) (
 	count, err := countResult.Unwrap()
 	if err != nil {
 		logger.Info("unable to load number of loans")
-		return emptyLoan, internalError(fmt.Sprintf("unable to load number of loans for title with isbn %q", isbn))
+		msg := fmt.Sprintf("unable to load number of loans for title with isbn %q", isbn)
+		return emptyLoan, internalError(msg, err)
 	}
 
 	// >= instead of == incase number of loans gets into a bad state
@@ -98,7 +77,7 @@ func (i *Interactor) Borrow(ctx context.Context, isbn string, user model.User) (
 	loan, err := i.LoanRW.Add(ctx, isbn, user)
 	if err != nil {
 		logger.Info("failed to add loan")
-		return emptyLoan, internalError("failed to add loan")
+		return emptyLoan, internalError("failed to add loan", err)
 	}
 
 	logger.Info("success")

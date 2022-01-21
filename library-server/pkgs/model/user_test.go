@@ -45,3 +45,27 @@ func TestCheckPassword(t *testing.T) {
 		assert.NotNil(t, err)
 	})
 }
+
+func TestAuthenticator_IsPatron(t *testing.T) {
+	t.Run("returns true if roles contains 'patron'", func(t *testing.T) {
+		user := User{Roles: []string{"patron"}}
+		assert.True(t, user.IsPatron())
+	})
+	t.Run("returns false if roles does not contain 'patron'", func(t *testing.T) {
+		user := User{Roles: []string{"foo"}}
+		assert.False(t, user.IsPatron())
+	})
+
+}
+
+func TestAuthenticator_IsLibrarian(t *testing.T) {
+	t.Run("returns true if roles contains 'patron'", func(t *testing.T) {
+		user := User{Roles: []string{"librarian"}}
+		assert.True(t, user.IsLibrarian())
+	})
+	t.Run("returns false if roles does not contain 'patron'", func(t *testing.T) {
+		user := User{Roles: []string{"foo"}}
+		assert.False(t, user.IsLibrarian())
+	})
+
+}

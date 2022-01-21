@@ -14,11 +14,9 @@ import (
 func setupInteractor() usecase.Interactor {
 	loanRW := memory.NewLoanReadWriter()
 	titleRW := memory.NewTitleReadWriter()
-	authenticator := memory.NewAuthenticator()
 	return usecase.Interactor{
-		Authenticator: authenticator,
-		LoanRW:        loanRW,
-		TitleRW:       titleRW,
+		LoanRW:  loanRW,
+		TitleRW: titleRW,
 	}
 }
 
@@ -83,7 +81,7 @@ func TestBorrow(t *testing.T) {
 
 		_, err := i.Borrow(ctx, isbn, user)
 		assert.NotNil(t, err)
-		assert.Contains(t, "isbn_not_found", err.Kind)
+		assert.Equal(t, "not_found", err.Kind)
 
 		finalCount, _ := i.LoanRW.Count(ctx, isbn)
 		assert.Equal(t, 0, finalCount)

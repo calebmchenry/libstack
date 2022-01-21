@@ -6,13 +6,13 @@ import (
 )
 
 type Interactor struct {
-	Authenticator Authenticator
-	TitleRW       TitleReadWriter
-	LoanRW        LoanReadWriter
+	TitleRW TitleReadWriter
+	LoanRW  LoanReadWriter
 }
 
 type Authenticator interface {
 	IsPatron(ctx context.Context, user model.User) bool
+	IsLibrarian(ctx context.Context, user model.User) bool
 }
 
 type TitleReadWriter interface {
