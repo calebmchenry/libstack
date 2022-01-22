@@ -10,14 +10,10 @@ type Interactor struct {
 	LoanRW  LoanReadWriter
 }
 
-type Authenticator interface {
-	IsPatron(ctx context.Context, user model.User) bool
-	IsLibrarian(ctx context.Context, user model.User) bool
-}
-
 type TitleReadWriter interface {
 	GetByIsbn(ctx context.Context, isbn string) (model.Title, error)
 	Add(ctx context.Context, title model.Title) (model.Title, error)
+	GetAll(ctx context.Context, user model.User) ([]model.Title, error)
 }
 
 type LoanReadWriter interface {

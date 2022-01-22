@@ -46,7 +46,7 @@ func TestCheckPassword(t *testing.T) {
 	})
 }
 
-func TestAuthenticator_IsPatron(t *testing.T) {
+func TestIsPatron(t *testing.T) {
 	t.Run("returns true if roles contains 'patron'", func(t *testing.T) {
 		user := User{Roles: []string{"patron"}}
 		assert.True(t, user.IsPatron())
@@ -58,7 +58,7 @@ func TestAuthenticator_IsPatron(t *testing.T) {
 
 }
 
-func TestAuthenticator_IsLibrarian(t *testing.T) {
+func TestIsLibrarian(t *testing.T) {
 	t.Run("returns true if roles contains 'patron'", func(t *testing.T) {
 		user := User{Roles: []string{"librarian"}}
 		assert.True(t, user.IsLibrarian())

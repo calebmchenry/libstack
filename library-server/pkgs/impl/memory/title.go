@@ -28,6 +28,14 @@ func (l *TitleReadWriter) GetByIsbn(ctx context.Context, isbn string) (title mod
 	return title, nil
 }
 
+func (l *TitleReadWriter) GetAll(ctx context.Context, user model.User) ([]model.Title, error) {
+	titles := []model.Title{}
+	for _, v := range l.cache {
+		titles = append(titles, v)
+	}
+	return titles, nil
+}
+
 // TODO(mchenryc): should I be returning a pointer here? That seems like it would mess up the cache
 
 func (l *TitleReadWriter) Add(ctx context.Context, title model.Title) (model.Title, error) {
