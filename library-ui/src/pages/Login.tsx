@@ -2,7 +2,7 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { auth } from "../auth";
 
-export function LoginPage(): JSX.Element {
+export function Login(): JSX.Element {
   return (
     <auth.Provider>
       <auth.Consumer>

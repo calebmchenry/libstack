@@ -13,7 +13,9 @@ export { Provider, Consumer };
 
 const context = createContext<auth.Provision | undefined>(undefined);
 const initialState: auth.State = { loggingIn: false };
-function Provider({ children }: Pick<ProviderProps<auth.Provision>, "children">) {
+function Provider({
+  children,
+}: Pick<ProviderProps<auth.Provision>, "children">) {
   const [state, setState] = useState<auth.State>(initialState);
 
   const login = useCallback(

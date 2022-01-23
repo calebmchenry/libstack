@@ -1,7 +1,7 @@
 import React from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { LoginPage } from "./Login";
+import { Login } from "./Login";
 import { client } from "../auth/client";
 
 const emailRequiredRegex = /^email is required$/i;
@@ -11,7 +11,7 @@ const passwordLabel = /^password$/i;
 const loginButtonText = /^login$/i;
 
 test("Login", async () => {
-  render(<LoginPage></LoginPage>);
+  render(<Login></Login>);
 
   const emailInput = screen.getByLabelText(emailLabel);
   const passwordInput = screen.getByLabelText(passwordLabel);
