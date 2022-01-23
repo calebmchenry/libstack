@@ -1,34 +1,31 @@
 import React from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { Login } from "./Login";
 import { client } from "../auth/client";
+import { SignUp } from "./SignUp";
 import { auth } from "../auth";
-import { BrowserRouter } from "react-router-dom";
 
 const emailRequiredRegex = /^email is required$/i;
 const passwordRequiredRegex = /^password is required$/i;
 const emailLabel = /^email$/i;
 const passwordLabel = /^password$/i;
-const loginButtonText = /^login$/i;
+const signUpButtonText = /^sign up$/i;
 
-test("Login", async () => {
+test("SignUp", async () => {
   render(
     <auth.Provider>
-      <BrowserRouter>
-        <Login></Login>
-      </BrowserRouter>
+      <SignUp></SignUp>
     </auth.Provider>
   );
 
   const emailInput = screen.getByLabelText(emailLabel);
   const passwordInput = screen.getByLabelText(passwordLabel);
-  const loginButton = screen.getByRole("button", { name: loginButtonText });
+  const signUpButton = screen.getByRole("button", { name: signUpButtonText });
   expect(emailInput).toHaveValue("");
   expect(passwordInput).toHaveValue("");
-  expect(loginButton).toBeInTheDocument();
+  expect(signUpButton).toBeInTheDocument();
 
-  userEvent.click(loginButton);
+  userEvent.click(signUpButton);
 
   await waitFor(() => {
     expect(screen.getByText(emailRequiredRegex)).toBeInTheDocument();
@@ -51,16 +48,16 @@ test("Login", async () => {
     expect(screen.queryByText(passwordRequiredRegex)).not.toBeInTheDocument();
   });
 
-  jest.spyOn(client, "login").mockResolvedValue("token123");
-  userEvent.click(loginButton);
+  jest.spyOn(client, "signUp").mockResolvedValue("token123");
+  userEvent.click(signUpButton);
 
   await waitFor(() => {
-    expect(loginButton).toBeDisabled();
+    expect(signUpButton).toBeDisabled();
   });
 
   await waitFor(() => {
-    expect(client.login).toBeCalledTimes(1);
+    expect(client.signUp).toBeCalledTimes(1);
   });
 
-  expect(loginButton).not.toBeDisabled();
+  expect(signUpButton).not.toBeDisabled();
 });

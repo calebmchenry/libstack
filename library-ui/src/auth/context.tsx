@@ -12,7 +12,7 @@ import { Credentials } from "./credentials";
 export { Provider, Consumer };
 
 const context = createContext<auth.Provision | undefined>(undefined);
-const initialState: auth.State = { loggingIn: false };
+const initialState: auth.State = { loggingIn: false, signingUp: false };
 function Provider({
   children,
 }: Pick<ProviderProps<auth.Provision>, "children">) {
@@ -55,8 +55,26 @@ function Provider({
       });
   }, [state.token, setState]);
 
+  const signUp = useCallback((values) => {
+    return Credentials.validate(values)
+      .then((creds) => {
+        setState((s) => ({ ...s, signingUp: true }));
+        return client.signUp(creds);
+      })
+      .then((token) => {
+        setState((s) => ({ ...s, token, signingUp: false }));
+      })
+      .catch((err) => {
+        setState((s) => ({
+          ...s,
+          signUpErr: err ?? new Error("Unexpected sign-up failure"),
+          signingUp: false,
+        }));
+      });
+  }, []);
+
   return (
-    <context.Provider value={{ ...state, login, logout }}>
+    <context.Provider value={{ ...state, login, logout, signUp }}>
       {children}
     </context.Provider>
   );

@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 export function Home() {
   return (
@@ -6,5 +6,5 @@ export function Home() {
       <h1>The Online Library</h1>
       <p>A place to learn 📚</p>
     </div>
-  )
+  );
 }

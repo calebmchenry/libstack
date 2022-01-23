@@ -4,10 +4,13 @@ declare namespace auth {
     username?: string;
     loginErr?: Error;
     loggingIn: boolean;
+    signingUp: boolean;
+    signUpErr?: Error;
   };
   type Provision = State & {
     login: (values: unknown) => Promise<void>;
     logout: () => Promise<void>;
+    signUp: (values: unknown) => Promise<void>;
   };
 
   type Token = string;
