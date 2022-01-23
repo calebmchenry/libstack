@@ -12,13 +12,16 @@ export function LoginPage(): JSX.Element {
   );
 }
 
+// TODO(mchenryc): handle loginErr
 function LoginForm({
   login,
   loggingIn,
 }: Pick<auth.Provision, "login" | "loggingIn">): JSX.Element {
   const { register, handleSubmit, formState } =
     useForm<{ email: string; password: string }>();
+
   return (
+    // TODO(mchenryc):  login.catch
     <form onSubmit={handleSubmit(login)}>
       <label htmlFor="login-email">Email</label>
       <input

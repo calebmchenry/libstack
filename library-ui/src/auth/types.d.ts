@@ -10,4 +10,10 @@ declare namespace auth {
     login: (values: unknown) => Promise<void>;
     logout: () => Promise<void>;
   };
+
+  type Token = string;
+  type Credentials = {
+    email: string;
+    password: string;
+  };
 }

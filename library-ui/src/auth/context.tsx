@@ -6,8 +6,8 @@ import React, {
   ProviderProps,
 } from "react";
 import { client } from "./client";
-import { Token } from "./token";
-import { hasProperty } from "../utils/fns";
+import { auth } from ".";
+import { Credentials } from "./credentials";
 
 export { Provider, Consumer };
 export type Provision = State & {
@@ -29,37 +29,11 @@ function Provider({ children }: Pick<ProviderProps<Provision>, "children">) {
 
   const login = useCallback(
     (values: unknown): Promise<void> => {
-      // TODO(mchenryc): extract all non react logic out
-      if (!hasProperty(values, "email"))
-        return Promise.reject(
-          new TypeError('Expected values to contain "email"')
-        );
-      if (!hasProperty(values, "password"))
-        return Promise.reject(
-          new TypeError('Expected values to contain "password"')
-        );
-      if (typeof values.email !== "string")
-        return Promise.reject(
-          new TypeError(
-            `Expected email to be a string but received "${values.email}"`
-          )
-        );
-      if (typeof values.password !== "string")
-        return Promise.reject(
-          new TypeError(
-            `Expected password to be a string but received "${values.password}"`
-          )
-        );
-      const emailRegex =
-        /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-      if (!emailRegex.test(values.email))
-        return Promise.reject(
-          new TypeError("Expected email to be a valid email")
-        );
-
-      setState((s) => ({ ...s, loggingIn: true }));
-      return client
-        .login({ email: values.email, password: values.password })
+      return Credentials.validate(values)
+        .then((creds) => {
+          setState((s) => ({ ...s, loggingIn: true }));
+          return client.login(creds);
+        })
         .then((token) => {
           setState((s) => ({ ...s, token, loggingIn: false }));
         })
@@ -77,19 +51,15 @@ function Provider({ children }: Pick<ProviderProps<Provision>, "children">) {
   const logout = useCallback(() => {
     if (state.token == null)
       return Promise.reject(new Error("Already logged out"));
-    return fetch("http://localhost:8000/api/v1/logout", {
-      method: "POST",
-      headers: { Authorization: `Bearer ${state.token}` },
-    })
-      .then((r) => r.json())
-      .then(Token.decode)
-      .then((token) => {
-        setState((s) => ({ ...s, token }));
+    return auth.client
+      .logout(state.token)
+      .then(() => {
+        setState((s) => ({ ...s, token: undefined }));
       })
       .catch((err) => {
         setState((s) => ({
           ...s,
-          loginErr: err ?? new Error("Unexpected login failure"),
+          loginErr: err ?? new Error("Unexpected logout failure"),
         }));
       });
   }, [state.token, setState]);

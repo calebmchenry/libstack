@@ -2,6 +2,7 @@ import { Token } from "./token";
 
 export const client = {
   login,
+  logout,
 };
 
 function login({
@@ -10,7 +11,7 @@ function login({
 }: {
   email: string;
   password: string;
-}): Promise<Token> {
+}): Promise<auth.Token> {
   // TODO(mchenryc): use env for url
   return fetch("http://localhost:8000/api/v1/login", {
     method: "POST",
@@ -21,4 +22,11 @@ function login({
   })
     .then((r) => r.json())
     .then(Token.decode);
+}
+
+function logout(token: string): Promise<void> {
+  return fetch("http://localhost:8000/api/v1/logout", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+  }).then((r) => r.json());
 }
