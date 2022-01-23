@@ -10,22 +10,11 @@ import { auth } from ".";
 import { Credentials } from "./credentials";
 
 export { Provider, Consumer };
-export type Provision = State & {
-  login: (values: unknown) => Promise<void>;
-  logout: () => Promise<void>;
-};
 
-type State = {
-  token?: string;
-  username?: string;
-  loginErr?: Error;
-  loggingIn: boolean;
-};
-
-const context = createContext<Provision | undefined>(undefined);
-const initialState: State = { loggingIn: false };
-function Provider({ children }: Pick<ProviderProps<Provision>, "children">) {
-  const [state, setState] = useState<State>(initialState);
+const context = createContext<auth.Provision | undefined>(undefined);
+const initialState: auth.State = { loggingIn: false };
+function Provider({ children }: Pick<ProviderProps<auth.Provision>, "children">) {
+  const [state, setState] = useState<auth.State>(initialState);
 
   const login = useCallback(
     (values: unknown): Promise<void> => {
@@ -71,7 +60,7 @@ function Provider({ children }: Pick<ProviderProps<Provision>, "children">) {
   );
 }
 
-function Consumer({ children }: ConsumerProps<Provision>) {
+function Consumer({ children }: ConsumerProps<auth.Provision>) {
   return (
     <context.Consumer>
       {(s) => {
