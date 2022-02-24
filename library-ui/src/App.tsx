@@ -6,6 +6,8 @@ import { Layout } from "./Layout";
 import { auth } from "./auth";
 import { SignUp } from "./pages/SignUp";
 
+// Hello world
+
 function App() {
   return (
     <auth.Provider>
